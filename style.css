@@ -1,15 +1,25 @@
 /* ============================================
    catalogos.elforastero.com.ar — Estilos
+   Brand Guide: El Forastero S.A. (2018)
    ============================================ */
 
 :root {
-  --red: #BC1221;
-  --black: #1a1a1a;
-  --text-dark: #333;
-  --text-mid: #555;
-  --text-light: #888;
-  --bg: #f5f3f0;
-  --white: #fff;
+  /* Colores primarios (brand tokens oficiales) */
+  --rojo-forastero: #BD1C1F;
+  --rojo-oscuro: #8B1315;
+  --negro-forastero: #1C1C1B;
+  --white: #FFFFFF;
+
+  /* Colores secundarios */
+  --gris-fondo: #F5F5F5;
+  --gris-borde: #E0E0E0;
+  --gris-texto: #666666;
+
+  /* Aliases funcionales */
+  --text-dark: var(--negro-forastero);
+  --text-mid: #555555;
+  --text-light: var(--gris-texto);
+  --bg: var(--gris-fondo);
 }
 
 *, *::before, *::after {
@@ -19,7 +29,7 @@
 }
 
 body {
-  font-family: 'Montserrat', Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   background: var(--bg);
   color: var(--text-dark);
   min-height: 100vh;
@@ -27,26 +37,26 @@ body {
   flex-direction: column;
 }
 
-/* ---- Header ---- */
+/* ---- Header (fondo blanco, logo color) ---- */
 .header {
-  background: var(--black);
-  padding: 32px 24px;
+  background: var(--white);
+  padding: 32px 24px 28px;
   text-align: center;
+  border-bottom: 3px solid var(--rojo-forastero);
 }
 
 .header-logo {
-  height: 80px;
+  height: 90px;
   width: auto;
   margin-bottom: 16px;
 }
 
 .header-title {
-  color: var(--white);
-  font-size: 18px;
-  font-weight: 600;
+  color: var(--negro-forastero);
+  font-size: 16px;
+  font-weight: 700;
   letter-spacing: 4px;
   text-transform: uppercase;
-  opacity: 0.7;
 }
 
 /* ---- Main ---- */
@@ -115,7 +125,7 @@ body {
 .card-title {
   font-size: 22px;
   font-weight: 800;
-  color: var(--black);
+  color: var(--negro-forastero);
   margin-bottom: 12px;
   line-height: 1.2;
 }
@@ -158,10 +168,10 @@ body {
   fill: currentColor;
 }
 
-/* ---- Footer ---- */
+/* ---- Footer (fondo rojo Forastero, texto blanco) ---- */
 .footer {
-  background: var(--black);
-  color: rgba(255,255,255,0.6);
+  background: var(--rojo-forastero);
+  color: rgba(255,255,255,0.8);
   padding: 40px 24px;
   text-align: center;
   font-size: 14px;
@@ -184,7 +194,7 @@ body {
 }
 
 .footer-links a {
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.85);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -219,19 +229,26 @@ body {
 
 .footer-phone-branch {
   font-weight: 700;
-  color: rgba(255,255,255,0.8);
+  color: var(--white);
+}
+
+.footer-divider {
+  width: 120px;
+  height: 1px;
+  background: rgba(255,255,255,0.3);
+  margin: 0 auto 16px;
 }
 
 .footer-copy {
   font-size: 12px;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 /* ---- Responsive ---- */
 @media (max-width: 680px) {
-  .header { padding: 24px 16px; }
-  .header-logo { height: 60px; }
-  .header-title { font-size: 14px; letter-spacing: 2px; }
+  .header { padding: 24px 16px 20px; }
+  .header-logo { height: 70px; }
+  .header-title { font-size: 13px; letter-spacing: 2px; }
   .main { padding: 24px 16px; }
   .catalog-grid { grid-template-columns: 1fr; gap: 16px; }
   .card-body { padding: 20px 18px; }
