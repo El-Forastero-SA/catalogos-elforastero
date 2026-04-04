@@ -1,0 +1,240 @@
+/* ============================================
+   catalogos.elforastero.com.ar — Estilos
+   ============================================ */
+
+:root {
+  --red: #BC1221;
+  --black: #1a1a1a;
+  --text-dark: #333;
+  --text-mid: #555;
+  --text-light: #888;
+  --bg: #f5f3f0;
+  --white: #fff;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Header ---- */
+.header {
+  background: var(--black);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.header-logo {
+  height: 80px;
+  width: auto;
+  margin-bottom: 16px;
+}
+
+.header-title {
+  color: var(--white);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ---- Main ---- */
+.main {
+  flex: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  width: 100%;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.intro p {
+  color: var(--text-mid);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ---- Grid ---- */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* ---- Card ---- */
+.catalog-card {
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.card-color-bar {
+  height: 6px;
+  width: 100%;
+}
+
+.card-body {
+  padding: 28px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-category {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--black);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.card-meta {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 24px;
+}
+
+.card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-download:hover {
+  opacity: 0.85;
+}
+
+.btn-download svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ---- Footer ---- */
+.footer {
+  background: var(--black);
+  color: rgba(255,255,255,0.6);
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.footer-brand {
+  color: var(--white);
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--white);
+}
+
+.footer-links svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.footer-phones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.footer-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-phone-branch {
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+}
+
+.footer-copy {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 680px) {
+  .header { padding: 24px 16px; }
+  .header-logo { height: 60px; }
+  .header-title { font-size: 14px; letter-spacing: 2px; }
+  .main { padding: 24px 16px; }
+  .catalog-grid { grid-template-columns: 1fr; gap: 16px; }
+  .card-body { padding: 20px 18px; }
+  .card-title { font-size: 18px; }
+  .footer-phones { flex-direction: column; gap: 8px; }
+}
