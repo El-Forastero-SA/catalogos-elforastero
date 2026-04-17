@@ -32,8 +32,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CATALOGO_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "catalogo-template")
 PDFS_DIR = os.path.join(SCRIPT_DIR, "pdfs")
 GENERATOR = os.path.join(CATALOGO_DIR, "generar_desde_lista.py")
+GENERATOR_ACCESORIOS = os.path.join(CATALOGO_DIR, "generar_accesorios.py")
 
-# Mapeo: nombre de archivo PDF destino -> ruta del Excel fuente
+# Mapeo: nombre de archivo PDF destino -> ruta del Excel fuente.
+# Si un catalogo usa un script distinto (ej: Accesorios con formato Cocooning),
+# se indica con "generator" y los argumentos extra con "extra_args".
 CATALOGOS = [
     {
         "excel": os.path.expanduser("~/Downloads/Mascotas___Alimentos_Super_Premium_Cervantes_ListaDeposito.xlsx"),
@@ -63,6 +66,11 @@ CATALOGOS = [
         "excel": os.path.expanduser("~/Downloads/Comestibles_e_Higiene_Cervantes_ListaDeposito.xlsx"),
         "pdf_name": "comestibles-e-higiene.pdf",
     },
+    {
+        "excel": os.path.expanduser("~/Downloads/lista precios 24-02-26.xlsx"),
+        "pdf_name": "accesorios.pdf",
+        "generator": GENERATOR_ACCESORIOS,
+    },
 ]
 
 
@@ -77,10 +85,11 @@ def main():
     print("=" * 60)
     print()
 
-    # Verificar que el generador existe
-    if not os.path.exists(GENERATOR):
-        print(f"Error: no se encontró {GENERATOR}", file=sys.stderr)
-        sys.exit(1)
+    # Verificar que los generadores existen
+    for g in (GENERATOR, GENERATOR_ACCESORIOS):
+        if not os.path.exists(g):
+            print(f"Error: no se encontró {g}", file=sys.stderr)
+            sys.exit(1)
 
     # Verificar Excel sources
     missing = []
@@ -107,8 +116,9 @@ def main():
         temp_html = os.path.join(CATALOGO_DIR, f"catalogo_{safe_name}.html")
         temp_pdf = os.path.join(CATALOGO_DIR, f"catalogo_{safe_name}.pdf")
 
+        generator = cat.get("generator", GENERATOR)
         cmd = [
-            sys.executable, GENERATOR,
+            sys.executable, generator,
             "--excel", cat["excel"],
             "--output", temp_html,
             "--pdf",
