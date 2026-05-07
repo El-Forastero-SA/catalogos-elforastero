@@ -1093,10 +1093,21 @@ def generate_html(category_name, category_color, products, products_per_page):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1080">
   <title>El Forastero - {escape(category_name)} - Portfolio de Productos</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <style>
+    @font-face {{ font-family: 'Montserrat'; font-weight: 400; font-style: normal;
+      src: url('fonts/Montserrat-400.woff2') format('woff2'); }}
+    @font-face {{ font-family: 'Montserrat'; font-weight: 500; font-style: normal;
+      src: url('fonts/Montserrat-500.woff2') format('woff2'); }}
+    @font-face {{ font-family: 'Montserrat'; font-weight: 600; font-style: normal;
+      src: url('fonts/Montserrat-600.woff2') format('woff2'); }}
+    @font-face {{ font-family: 'Montserrat'; font-weight: 700; font-style: normal;
+      src: url('fonts/Montserrat-700.woff2') format('woff2'); }}
+    @font-face {{ font-family: 'Montserrat'; font-weight: 800; font-style: normal;
+      src: url('fonts/Montserrat-800.woff2') format('woff2'); }}
+    @font-face {{ font-family: 'Playfair Display'; font-weight: 700; font-style: normal;
+      src: url('fonts/PlayfairDisplay-700.woff2') format('woff2'); }}
+    @font-face {{ font-family: 'Playfair Display'; font-weight: 800; font-style: normal;
+      src: url('fonts/PlayfairDisplay-800.woff2') format('woff2'); }}
 {css}
   </style>
 </head>
