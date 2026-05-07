@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>El Forastero - Portfolio de Productos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       EL FORASTERO — CATALOGO DE PRODUCTOS
+       Template HTML para generacion de PDF via WeasyPrint / wkhtmltopdf
+       Formato: 1080x1920px (9:16 mobile/WhatsApp)
+       ============================================================ */
+
+    :root {
+      --category-color: #BC1221;
+      --bg-light: #E8E5E0;
+      --text-dark: #333333;
+      --text-mid: #555555;
+      --text-light: #777777;
+      --white: #FFFFFF;
+      --page-w: 1080px;
+      --page-h: 1920px;
+    }
+
+    /* ---- Reset & Base ---- */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: #ccc;
+      color: var(--text-dark);
+    }
+
+    /* ---- Print / PDF ---- */
+    @page {
+      size: 1080px 1920px;
+      margin: 0;
+    }
+
+    @media print {
+      body { background: white; }
+      .page { margin: 0; box-shadow: none; }
+    }
+
+    /* ============================================================
+       PAGE CONTAINER
+       ============================================================ */
+    .page {
+      position: relative;
+      width: var(--page-w);
+      height: var(--page-h);
+      margin: 20px auto;
+      background: var(--white);
+      overflow: hidden;
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+
+    /* ============================================================
+       CONFETTI BACKGROUND PATTERN (SVG)
+       Used in content area of product pages
+       ============================================================ */
+    .content-area {
+      position: relative;
+      background-color: var(--bg-light);
+      background-image: url("data:image/svg+xml,%3Csvg width='160' height='160' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cstyle%3E.t%7Bopacity:.055;fill:none;stroke-width:1.5%7D.d%7Bopacity:.04%7D%3C/style%3E%3C/defs%3E%3Cpolygon class='t' points='20,8 28,22 12,22' stroke='%23555'/%3E%3Cpolygon class='t' points='75,15 83,29 67,29' stroke='%23999' transform='rotate(20 75 22)'/%3E%3Cpolygon class='t' points='130,10 138,24 122,24' stroke='%23555' transform='rotate(-15 130 17)'/%3E%3Cpolygon class='t' points='45,55 53,69 37,69' stroke='%23777' transform='rotate(35 45 62)'/%3E%3Cpolygon class='t' points='110,50 118,64 102,64' stroke='%23555' transform='rotate(-25 110 57)'/%3E%3Cpolygon class='t' points='15,95 23,109 7,109' stroke='%23999' transform='rotate(10 15 102)'/%3E%3Cpolygon class='t' points='85,90 93,104 77,104' stroke='%23555' transform='rotate(-40 85 97)'/%3E%3Cpolygon class='t' points='140,85 148,99 132,99' stroke='%23777'/%3E%3Cpolygon class='t' points='50,130 58,144 42,144' stroke='%23555' transform='rotate(30 50 137)'/%3E%3Cpolygon class='t' points='115,135 123,149 107,149' stroke='%23999' transform='rotate(-10 115 142)'/%3E%3Ccircle class='d' cx='35' cy='35' r='2' fill='%23888'/%3E%3Ccircle class='d' cx='100' cy='75' r='1.8' fill='%23888'/%3E%3Ccircle class='d' cx='60' cy='110' r='2' fill='%23888'/%3E%3Crect class='d' x='145' y='40' width='4' height='4' fill='%23888' transform='rotate(45 147 42)'/%3E%3Crect class='d' x='25' y='75' width='3' height='3' fill='%23888' transform='rotate(30 26.5 76.5)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+    }
+
+    /* ============================================================
+       HEADER (~8% = ~154px of 1920)
+       ============================================================ */
+    .page-header {
+      position: relative;
+      width: 100%;
+      height: 154px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      z-index: 10;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-left: 40px;
+      flex-shrink: 0;
+    }
+
+    .header-logo-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--category-color);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: 36px;
+    }
+
+    .header-logo-text {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 26px;
+      letter-spacing: 3px;
+      color: var(--text-dark);
+      font-variant: small-caps;
+    }
+
+    .header-bar {
+      position: relative;
+      height: 100%;
+      flex: 1;
+      max-width: 620px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--category-color);
+      clip-path: polygon(80px 0, 100% 0, 100% 100%, 0 100%);
+      padding-left: 100px;
+      padding-right: 40px;
+    }
+
+    .header-bar-title {
+      color: var(--white);
+      font-weight: 800;
+      font-size: 28px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Optional brand/category logo in header */
+    .header-brand-logo {
+      position: absolute;
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 70px;
+      height: 70px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ============================================================
+       CONTENT AREA (~80% = ~1536px)
+       ============================================================ */
+    .content-area {
+      width: 100%;
+      height: 1516px;
+      padding: 36px 40px 24px;
+    }
+
+    /* ---- Product Grid: 4 cols x 3 rows ---- */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 20px 16px;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ---- Single Product Card ---- */
+    .product-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px 8px 8px;
+      page-break-inside: avoid;
+    }
+
+    .product-image-wrap {
+      width: 100%;
+      flex: 0 0 65%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .product-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.18));
+    }
+
+    /* Placeholder for missing images */
+    .product-image-placeholder {
+      width: 80%;
+      height: 85%;
+      background: linear-gradient(135deg, #d5d0ca 0%, #c2bcb4 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a09a92;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .product-info {
+      width: 100%;
+      text-align: center;
+      padding: 4px 2px 0;
+      line-height: 1.3;
+    }
+
+    .product-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+      /* Truncate long names */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-variant {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+    }
+
+    .product-meta {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-light);
+    }
+
+    /* ============================================================
+       FOOTER (~12% = ~230px)
+       ============================================================ */
+    .page-footer {
+      width: 100%;
+      height: 250px;
+      background: var(--category-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 40px;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 30px;
+      letter-spacing: 4px;
+      color: var(--white);
+      font-variant: small-caps;
+    }
+
+    .footer-contact-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .footer-contact-row svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--white);
+      flex-shrink: 0;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .footer-contact-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-phones {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 500;
+      flex-wrap: wrap;
+    }
+
+    .footer-phone-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-phone-item svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--white);
+      flex-shrink: 0;
+    }
+
+    .footer-phone-branch {
+      font-weight: 700;
+    }
+
+    .footer-divider {
+      width: 60%;
+      height: 1px;
+      background: rgba(255,255,255,0.25);
+    }
+
+    /* ============================================================
+       COVER PAGE
+       ============================================================ */
+    .page-cover {
+      background: var(--text-dark);
+    }
+
+    .cover-image-area {
+      width: 100%;
+      height: 1500px;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.65) 100%),
+                  linear-gradient(135deg, #b8b0a4 0%, #9a9288 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 60px 60px;
+      position: relative;
+    }
+
+    .cover-image-area .cover-placeholder-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      color: rgba(255,255,255,0.35);
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    .cover-category {
+      font-size: 72px;
+      font-weight: 800;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    .cover-subcategory {
+      font-size: 30px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .cover-footer {
+      width: 100%;
+      height: 420px;
+      background: var(--category-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 30px 40px;
+    }
+
+    .cover-footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: 48px;
+      letter-spacing: 6px;
+      color: var(--white);
+      font-variant: small-caps;
+    }
+
+    .cover-footer-sub {
+      font-size: 20px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .cover-footer-line {
+      width: 120px;
+      height: 2px;
+      background: rgba(255,255,255,0.4);
+    }
+
+    .cover-footer-contact {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+
+    .cover-footer-contact svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--white);
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* ============================================================
+       BACK PAGE (CONTRAPORTADA)
+       ============================================================ */
+    .page-back {
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .back-logo-icon {
+      width: 160px;
+      height: 160px;
+      background: var(--category-color);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: 96px;
+      margin-bottom: 24px;
+    }
+
+    .back-logo-text {
+      font-family: 'Playfair Display', serif;
+      font-weight: 800;
+      font-size: 56px;
+      letter-spacing: 6px;
+      color: var(--category-color);
+      font-variant: small-caps;
+      margin-bottom: 8px;
+    }
+
+    .back-since {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-light);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 60px;
+    }
+
+    .back-divider {
+      width: 200px;
+      height: 2px;
+      background: #ddd;
+      margin-bottom: 60px;
+    }
+
+    .back-branches {
+      display: flex;
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+
+    .back-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .back-branch-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .back-branch-phone {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-mid);
+    }
+
+    .back-branch-phone svg {
+      width: 22px;
+      height: 22px;
+      fill: #25D366;
+    }
+
+    .back-tagline {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--category-color);
+      margin-top: 20px;
+    }
+
+    .back-web {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 40px;
+      font-size: 18px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .back-web svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-light);
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       INLINE SVG ICONS (hidden, referenced via <use>)
+       ============================================================ -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-web" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+    </symbol>
+    <symbol id="icon-instagram" viewBox="0 0 24 24">
+      <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>
+    </symbol>
+    <symbol id="icon-whatsapp" viewBox="0 0 24 24">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+    </symbol>
+  </svg>
+
+
+  <!-- ============================================================
+       PAGE 1: COVER (PORTADA)
+       ============================================================ -->
+  <!-- Jinja2: {% block cover %} -->
+  <div class="page page-cover">
+    <div class="cover-image-area">
+      <!-- {{ cover_image_url }} -->
+      <span class="cover-placeholder-text">IMAGEN DE PORTADA / CATEGORIA</span>
+      <!-- {{ category.name }} -->
+      <div class="cover-category">Grocery<br>& Snacks</div>
+      <!-- {{ category.subtitle }} -->
+      <div class="cover-subcategory">Portfolio de Productos</div>
+    </div>
+    <div class="cover-footer">
+      <div class="cover-footer-logo">El Forastero</div>
+      <div class="cover-footer-line"></div>
+      <div class="cover-footer-sub">Distribuidora Patagonica</div>
+      <div class="cover-footer-contact">
+        <span>
+          <svg><use href="#icon-web"/></svg>
+          www.elforastero.com.ar
+        </span>
+        <span>
+          <svg><use href="#icon-instagram"/></svg>
+          @elforasterosa
+        </span>
+      </div>
+    </div>
+  </div>
+  <!-- {% endblock cover %} -->
+
+
+  <!-- ============================================================
+       PAGE 2: PRODUCT PAGE (FULL — 12 products)
+       ============================================================ -->
+  <!-- Jinja2: {% for page in pages %} -->
+  <div class="page">
+    <div class="page-header">
+      <div class="header-logo">
+        <div class="header-logo-icon">F</div>
+        <div class="header-logo-text">El Forastero</div>
+      </div>
+      <div class="header-bar">
+        <!-- {{ page.title | default('PORTFOLIO DE PRODUCTOS') }} -->
+        <span class="header-bar-title">Portfolio de Productos</span>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <!-- {% for product in page.products %} -->
+      <div class="product-grid">
+
+        <!-- Product 1 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <!-- <img class="product-image" src="{{ product.image_url }}" alt="{{ product.name }}"> -->
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <!-- {{ product.brand }} {{ product.name }} -->
+            <div class="product-name">Arcor Cereal Mix</div>
+            <!-- {{ product.variant }} -->
+            <div class="product-variant">Avena y Pasas</div>
+            <!-- {{ product.presentation }} - Cod. {{ product.code }} -->
+            <div class="product-meta">230g x6 - Cod. 4812</div>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Arcor Cereal Mix</div>
+            <div class="product-variant">Frutos del Bosque</div>
+            <div class="product-meta">230g x6 - Cod. 4813</div>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Toddy Cacao</div>
+            <div class="product-variant">Instantaneo</div>
+            <div class="product-meta">400g x12 - Cod. 3201</div>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Bon o Bon</div>
+            <div class="product-variant">Chocolate c/ Leche</div>
+            <div class="product-meta">450g x6 - Cod. 2910</div>
+          </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Lay's Clasicas</div>
+            <div class="product-variant">Original</div>
+            <div class="product-meta">270g x12 - Cod. 5541</div>
+          </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Lay's Clasicas</div>
+            <div class="product-variant">Jamon</div>
+            <div class="product-meta">270g x12 - Cod. 5542</div>
+          </div>
+        </div>
+
+        <!-- Product 7 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Pepitos</div>
+            <div class="product-variant">Chips Chocolate</div>
+            <div class="product-meta">118g x24 - Cod. 1877</div>
+          </div>
+        </div>
+
+        <!-- Product 8 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Oreo Original</div>
+            <div class="product-variant">Vainilla</div>
+            <div class="product-meta">117g x36 - Cod. 1901</div>
+          </div>
+        </div>
+
+        <!-- Product 9 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Havanna Alfajor</div>
+            <div class="product-variant">Mixto x6</div>
+            <div class="product-meta">330g x8 - Cod. 7720</div>
+          </div>
+        </div>
+
+        <!-- Product 10 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Cachafaz Alfajor</div>
+            <div class="product-variant">Maicena x6</div>
+            <div class="product-meta">360g x8 - Cod. 7755</div>
+          </div>
+        </div>
+
+        <!-- Product 11 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Terrabusi Variedad</div>
+            <div class="product-variant">Surtido</div>
+            <div class="product-meta">400g x12 - Cod. 2050</div>
+          </div>
+        </div>
+
+        <!-- Product 12 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Ser Yogurt</div>
+            <div class="product-variant">Frutilla Descremado</div>
+            <div class="product-meta">190g x12 - Cod. 9102</div>
+          </div>
+        </div>
+
+      </div>
+      <!-- {% endfor %} (products) -->
+    </div>
+
+    <div class="page-footer">
+      <div class="footer-logo">El Forastero</div>
+      <div class="footer-contact-row">
+        <span class="footer-contact-item">
+          <svg><use href="#icon-web"/></svg>
+          www.elforastero.com.ar
+        </span>
+        <span class="footer-contact-item">
+          <svg><use href="#icon-instagram"/></svg>
+          @elforasterosa
+        </span>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-phones">
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>298 4222 800</span>
+          <span class="footer-phone-branch">CERVANTES</span>
+        </div>
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>298 4222 800</span>
+          <span class="footer-phone-branch">SANTA ROSA</span>
+        </div>
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>294 441-0174</span>
+          <span class="footer-phone-branch">BARILOCHE</span>
+        </div>
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>2396 44-0420</span>
+          <span class="footer-phone-branch">PEHUAJO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- {% endfor %} (pages) -->
+
+
+  <!-- ============================================================
+       PAGE 3: PRODUCT PAGE (PARTIAL — 6 products)
+       ============================================================ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="header-logo">
+        <div class="header-logo-icon">F</div>
+        <div class="header-logo-text">El Forastero</div>
+      </div>
+      <div class="header-bar">
+        <span class="header-bar-title">Portfolio de Productos</span>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="product-grid">
+
+        <!-- Product 1 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Marolio Aceite</div>
+            <div class="product-variant">Girasol</div>
+            <div class="product-meta">1.5L x6 - Cod. 6001</div>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Marolio Arroz</div>
+            <div class="product-variant">Largo Fino 00000</div>
+            <div class="product-meta">1kg x10 - Cod. 6020</div>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">La Campagnola</div>
+            <div class="product-variant">Tomate Triturado</div>
+            <div class="product-meta">520g x12 - Cod. 3380</div>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Lucchetti Fideos</div>
+            <div class="product-variant">Tirabuzones</div>
+            <div class="product-meta">500g x12 - Cod. 3501</div>
+          </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Ala Jabon Liquido</div>
+            <div class="product-variant">Ropa Fina</div>
+            <div class="product-meta">800ml x8 - Cod. 8110</div>
+          </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card">
+          <div class="product-image-wrap">
+            <div class="product-image-placeholder">FOTO</div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">Cif Crema</div>
+            <div class="product-variant">Limon</div>
+            <div class="product-meta">750g x12 - Cod. 8205</div>
+          </div>
+        </div>
+
+        <!-- Empty slots (7-12) stay empty, grid handles layout -->
+
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div class="footer-logo">El Forastero</div>
+      <div class="footer-contact-row">
+        <span class="footer-contact-item">
+          <svg><use href="#icon-web"/></svg>
+          www.elforastero.com.ar
+        </span>
+        <span class="footer-contact-item">
+          <svg><use href="#icon-instagram"/></svg>
+          @elforasterosa
+        </span>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-phones">
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>298 4222 800</span>
+          <span class="footer-phone-branch">CERVANTES</span>
+        </div>
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>298 4222 800</span>
+          <span class="footer-phone-branch">SANTA ROSA</span>
+        </div>
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>294 441-0174</span>
+          <span class="footer-phone-branch">BARILOCHE</span>
+        </div>
+        <div class="footer-phone-item">
+          <svg><use href="#icon-whatsapp"/></svg>
+          <span>2396 44-0420</span>
+          <span class="footer-phone-branch">PEHUAJO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       PAGE 4: BACK PAGE (CONTRAPORTADA)
+       ============================================================ -->
+  <!-- Jinja2: {% block backcover %} -->
+  <div class="page page-back">
+    <div class="back-logo-icon">F</div>
+    <!-- Logo placeholder — replace with <img> for production -->
+    <div class="back-logo-text">El Forastero</div>
+    <div class="back-since">Desde 1959</div>
+    <div class="back-divider"></div>
+
+    <div class="back-branches">
+      <div class="back-branch">
+        <div class="back-branch-name">Cervantes</div>
+        <div class="back-branch-phone">
+          <svg><use href="#icon-whatsapp"/></svg>
+          298 4222 800
+        </div>
+      </div>
+      <div class="back-branch">
+        <div class="back-branch-name">Santa Rosa</div>
+        <div class="back-branch-phone">
+          <svg><use href="#icon-whatsapp"/></svg>
+          298 4222 800
+        </div>
+      </div>
+      <div class="back-branch">
+        <div class="back-branch-name">Bariloche</div>
+        <div class="back-branch-phone">
+          <svg><use href="#icon-whatsapp"/></svg>
+          294 441-0174
+        </div>
+      </div>
+      <div class="back-branch">
+        <div class="back-branch-name">Pehuajo</div>
+        <div class="back-branch-phone">
+          <svg><use href="#icon-whatsapp"/></svg>
+          2396 44-0420
+        </div>
+      </div>
+    </div>
+
+    <div class="back-tagline">Estamos listos para ayudarte a crecer!</div>
+
+    <div class="back-web">
+      <span>
+        <svg><use href="#icon-web"/></svg>
+        www.elforastero.com.ar
+      </span>
+      <span>
+        <svg><use href="#icon-instagram"/></svg>
+        @elforasterosa
+      </span>
+    </div>
+  </div>
+  <!-- {% endblock backcover %} -->
+
+</body>
+</html>

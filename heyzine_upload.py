@@ -39,7 +39,14 @@ CATALOGOS = [
 
 
 def load_api_key() -> str:
-    # Busca primero en ../.env (Claude-Code/.env), después env var
+    """
+    Resuelve HEYZINE_API_KEY en este orden:
+      1. Env var (CI/GitHub Actions inyecta via Secrets)
+      2. ../.env (Claude-Code/.env, para corridas locales desde la Mac de Caco)
+    """
+    key = os.environ.get("HEYZINE_API_KEY")
+    if key:
+        return key
     env_path = Path(__file__).resolve().parent.parent / ".env"
     if env_path.exists():
         for line in env_path.read_text().splitlines():
@@ -48,10 +55,7 @@ def load_api_key() -> str:
                 if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
                     value = value[1:-1]
                 return value
-    key = os.environ.get("HEYZINE_API_KEY")
-    if not key:
-        sys.exit(f"ERROR: HEYZINE_API_KEY no definida (revisar {env_path})")
-    return key
+    sys.exit(f"ERROR: HEYZINE_API_KEY no definida (revisar env var o {env_path})")
 
 
 def upload_one(api_key_full: str, pdf_filename: str, title: str) -> dict:

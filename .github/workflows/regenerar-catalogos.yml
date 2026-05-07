@@ -1,0 +1,59 @@
+name: regenerar-catalogos
+
+# Regenera los 7 catálogos Nexion cada 2 semanas (1 y 15 de cada mes a 13:00 UTC
+# = 10:00 AR). Salta Accesorios — ese depende del Excel local de Cocooning, se
+# actualiza manualmente desde la Mac de Caco cuando llega lista nueva.
+
+on:
+  schedule:
+    - cron: '0 13 1,15 * *'   # 1 y 15 de cada mes a 10:00 AR (UTC-3)
+  workflow_dispatch:           # disparo manual desde la UI de GitHub
+
+permissions:
+  contents: write              # necesario para que el script pushee los PDFs
+
+concurrency:
+  group: regenerar-catalogos
+  cancel-in-progress: false
+
+jobs:
+  regenerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install openpyxl playwright pillow
+
+      - name: Install Playwright Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Build catalogo-template/.env desde Secrets
+        env:
+          MAGENTO_BASE_URL: ${{ secrets.MAGENTO_BASE_URL }}
+          MAGENTO_ACCESS_TOKEN: ${{ secrets.MAGENTO_ACCESS_TOKEN }}
+        run: |
+          {
+            printf 'MAGENTO_BASE_URL=%s\n' "$MAGENTO_BASE_URL"
+            printf 'MAGENTO_ACCESS_TOKEN=%s\n' "$MAGENTO_ACCESS_TOKEN"
+          } > catalogo-template/.env
+
+      - name: Configurar git para commits desde Action
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Regenerar catálogos + Heyzine
+        env:
+          HEYZINE_API_KEY: ${{ secrets.HEYZINE_API_KEY }}
+        run: python -u actualizar_catalogos.py --skip-accesorios

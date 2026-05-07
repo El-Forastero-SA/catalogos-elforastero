@@ -43,7 +43,7 @@ from datetime import datetime
 # =============================================================================
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CATALOGO_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "catalogo-template")
+CATALOGO_DIR = os.path.join(SCRIPT_DIR, "catalogo-template")
 PDFS_DIR = os.path.join(SCRIPT_DIR, "pdfs")
 INDEX_HTML = os.path.join(SCRIPT_DIR, "index.html")
 GENERATOR = os.path.join(CATALOGO_DIR, "generar_desde_lista.py")
@@ -272,6 +272,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-heyzine", action="store_true",
                         help="No re-sube los flipbooks a Heyzine al final")
+    parser.add_argument("--skip-accesorios", action="store_true",
+                        help="Salta el catálogo Accesorios (Cocooning/Hunter, "
+                             "Excel local). Útil para corridas en CI sin Excel local.")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -286,9 +289,15 @@ def main():
             print(f"Error: no se encontró {g}", file=sys.stderr)
             sys.exit(1)
 
+    # Filtrar catálogos según flags
+    catalogos_a_correr = list(CATALOGOS)
+    if args.skip_accesorios:
+        catalogos_a_correr = [c for c in catalogos_a_correr if "categoria" in c]
+        print("[--skip-accesorios] Salteo Accesorios; corro solo los Nexion.\n")
+
     # Verificar Excel locales (solo Accesorios u otros con "excel" hardcodeado)
     missing = []
-    for cat in CATALOGOS:
+    for cat in catalogos_a_correr:
         if "excel" in cat and not os.path.exists(cat["excel"]):
             missing.append(cat["excel"])
     if missing:
@@ -304,9 +313,10 @@ def main():
     # Regenerar cada catálogo
     errors = []
     counts = {}
-    for i, cat in enumerate(CATALOGOS, 1):
+    total = len(catalogos_a_correr)
+    for i, cat in enumerate(catalogos_a_correr, 1):
         name = cat["pdf_name"].replace(".pdf", "").replace("-", " ").title()
-        print(f"\n[{i}/{len(CATALOGOS)}] Generando: {name}")
+        print(f"\n[{i}/{total}] Generando: {name}")
 
         # Resolver path del Excel: descarga remota si tiene "categoria",
         # path local fijo si tiene "excel"
@@ -374,7 +384,7 @@ def main():
         print("=" * 60)
         sys.exit(1)
 
-    print(f"  {len(CATALOGOS)} catálogos regenerados exitosamente.")
+    print(f"  {len(catalogos_a_correr)} catálogos regenerados exitosamente.")
     print("=" * 60)
 
     # Sincronizar contadores del index.html con el conteo real de cada PDF
@@ -396,11 +406,17 @@ def main():
         os.path.join("pdfs", c["pdf_name"]) for c in CATALOGOS
     ]
     subprocess.run(["git", "add", "--"] + files_to_add, check=True)
-    date_str = datetime.now().strftime("%Y-%m-%d %H:%M")
-    subprocess.run([
-        "git", "commit", "-m", f"update: catálogos actualizados — {date_str}",
-    ], check=True)
-    subprocess.run(["git", "push"], check=True)
+    # Si no hay cambios staged, saltar el commit/push (evita falla en CI cuando
+    # los PDFs se regeneran byte-idénticos a la versión publicada).
+    diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+    if diff.returncode == 0:
+        print("No hay cambios — salto commit/push.")
+    else:
+        date_str = datetime.now().strftime("%Y-%m-%d %H:%M")
+        subprocess.run([
+            "git", "commit", "-m", f"update: catálogos actualizados — {date_str}",
+        ], check=True)
+        subprocess.run(["git", "push"], check=True)
 
     print("\nVercel va a re-deployar en ~1 minuto.")
     print("URL: https://catalogos.elforastero.com.ar")

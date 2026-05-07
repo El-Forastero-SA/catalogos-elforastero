@@ -1,2 +1,12 @@
 .DS_Store
 heyzine_results.json
+
+# Secrets que el script catalogo-template lee como .env (en CI se materializa
+# desde Secrets, en local Caco lo mantiene aparte)
+catalogo-template/.env
+
+# Caches y artefactos transitorios del generador
+catalogo-template/.image_cache/
+catalogo-template/__pycache__/
+catalogo-template/catalogo_*.html
+catalogo-template/catalogo_*.pdf
