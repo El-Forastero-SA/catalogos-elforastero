@@ -53,6 +53,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Cache de imágenes procesadas (auto-crop PIL)
+        uses: actions/cache@v4
+        with:
+          path: catalogo-template/.image_cache
+          key: image-cache-${{ github.run_id }}
+          restore-keys: |
+            image-cache-
+
       - name: Regenerar catálogos + Heyzine
         env:
           HEYZINE_API_KEY: ${{ secrets.HEYZINE_API_KEY }}
