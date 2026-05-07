@@ -482,6 +482,34 @@ SVG_BG_PATTERN = (
 )
 
 
+FONTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
+FONTS_SPEC = [
+    ("Montserrat",       "400", "Montserrat-400.woff2"),
+    ("Montserrat",       "500", "Montserrat-500.woff2"),
+    ("Montserrat",       "600", "Montserrat-600.woff2"),
+    ("Montserrat",       "700", "Montserrat-700.woff2"),
+    ("Montserrat",       "800", "Montserrat-800.woff2"),
+    ("Playfair Display", "700", "PlayfairDisplay-700.woff2"),
+    ("Playfair Display", "800", "PlayfairDisplay-800.woff2"),
+]
+
+
+def render_fonts_css():
+    """Embebe los .woff2 como data:URI base64 en @font-face — evita problemas
+    de carga via file:// en Chromium/Linux que terminan en fallback Type 3."""
+    blocks = []
+    for family, weight, fname in FONTS_SPEC:
+        path = os.path.join(FONTS_DIR, fname)
+        with open(path, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode("ascii")
+        blocks.append(
+            f"@font-face {{ font-family: '{family}'; font-weight: {weight}; "
+            f"font-style: normal; "
+            f"src: url('data:font/woff2;base64,{b64}') format('woff2'); }}"
+        )
+    return "\n    ".join(blocks)
+
+
 def generate_css(category_color):
     """Genera el CSS completo embebido, basado en el template."""
     return f"""
@@ -1094,20 +1122,7 @@ def generate_html(category_name, category_color, products, products_per_page):
   <meta name="viewport" content="width=1080">
   <title>El Forastero - {escape(category_name)} - Portfolio de Productos</title>
   <style>
-    @font-face {{ font-family: 'Montserrat'; font-weight: 400; font-style: normal;
-      src: url('fonts/Montserrat-400.woff2') format('woff2'); }}
-    @font-face {{ font-family: 'Montserrat'; font-weight: 500; font-style: normal;
-      src: url('fonts/Montserrat-500.woff2') format('woff2'); }}
-    @font-face {{ font-family: 'Montserrat'; font-weight: 600; font-style: normal;
-      src: url('fonts/Montserrat-600.woff2') format('woff2'); }}
-    @font-face {{ font-family: 'Montserrat'; font-weight: 700; font-style: normal;
-      src: url('fonts/Montserrat-700.woff2') format('woff2'); }}
-    @font-face {{ font-family: 'Montserrat'; font-weight: 800; font-style: normal;
-      src: url('fonts/Montserrat-800.woff2') format('woff2'); }}
-    @font-face {{ font-family: 'Playfair Display'; font-weight: 700; font-style: normal;
-      src: url('fonts/PlayfairDisplay-700.woff2') format('woff2'); }}
-    @font-face {{ font-family: 'Playfair Display'; font-weight: 800; font-style: normal;
-      src: url('fonts/PlayfairDisplay-800.woff2') format('woff2'); }}
+{render_fonts_css()}
 {css}
   </style>
 </head>
