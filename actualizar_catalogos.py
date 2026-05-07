@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-actualizar_catalogos.py — Regenera los 8 catálogos PDF y deploya a Vercel via git push.
+actualizar_catalogos.py — Regenera los 8 catálogos PDF, deploya a Vercel via git
+push, y refresca los flipbooks en Heyzine.
 
 Uso:
-    python3 actualizar_catalogos.py
+    python3 actualizar_catalogos.py                # pipeline completo
+    python3 actualizar_catalogos.py --skip-heyzine # sin paso Heyzine
 
 Flujo:
     1. Descarga las 7 listas Nexion (Cervantes Depósito) desde
@@ -13,20 +15,25 @@ Flujo:
     3. Regenera los PDFs desde cada lista.
     4. Sincroniza los contadores del index.html con el count real de cada PDF.
     5. Commit + push → Vercel re-deploya automáticamente.
+    6. Espera que el deploy de Vercel sirva los PDFs nuevos.
+    7. Re-sube a Heyzine — los flipbook IDs/URLs se mantienen (dedup por URL).
 
 Requisitos:
     - generar_desde_lista.py + generar_accesorios.py en ../catalogo-template/
     - .env con credenciales Magento en ../catalogo-template/
+    - .env con HEYZINE_API_KEY en ../../Claude-Code/.env (un nivel arriba)
     - playwright instalado (pip3 install playwright && python3 -m playwright install chromium)
     - git configurado con remote origin
     - listas.elforastero.com.ar accesible (Nexion base CSV ya cargado en el sitio)
 """
 
+import argparse
 import os
 import re
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -41,6 +48,11 @@ PDFS_DIR = os.path.join(SCRIPT_DIR, "pdfs")
 INDEX_HTML = os.path.join(SCRIPT_DIR, "index.html")
 GENERATOR = os.path.join(CATALOGO_DIR, "generar_desde_lista.py")
 GENERATOR_ACCESORIOS = os.path.join(CATALOGO_DIR, "generar_accesorios.py")
+HEYZINE_SCRIPT = os.path.join(SCRIPT_DIR, "heyzine_upload.py")
+
+# URL pública para verificar que el deploy de Vercel terminó antes de re-subir
+# a Heyzine. Si Heyzine fetcha antes, agarra contenido viejo cacheado.
+PROBE_PDF_URL = "https://catalogos.elforastero.com.ar/pdfs/equinos.pdf"
 
 # Endpoint de listas.elforastero.com.ar (genera + descarga listas Cervantes)
 LISTAS_BASE_URL = "https://listas.elforastero.com.ar"
@@ -157,6 +169,52 @@ def descargar_lista(categoria, dest_dir):
 
 
 # =============================================================================
+# Espera de deploy Vercel + paso Heyzine
+# =============================================================================
+
+def esperar_deploy_vercel(referencia_local_path, max_segundos=180):
+    """
+    Espera a que Vercel publique el PDF más nuevo. Compara content-length local
+    vs remoto del PDF probe (Equinos). Sale en cuanto coinciden o cuando se
+    agota el timeout.
+    """
+    if not os.path.exists(referencia_local_path):
+        print(f"  Aviso: probe local no existe ({referencia_local_path}), saltando wait")
+        return
+    local_size = os.path.getsize(referencia_local_path)
+
+    deadline = time.time() + max_segundos
+    intentos = 0
+    while time.time() < deadline:
+        intentos += 1
+        try:
+            req = urllib.request.Request(PROBE_PDF_URL, method="HEAD")
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                remote_size = int(resp.headers.get("content-length") or 0)
+            if remote_size == local_size:
+                print(f"  Vercel sirviendo versión nueva (intento {intentos}, "
+                      f"{remote_size} bytes)")
+                return
+            print(f"  Esperando Vercel... (intento {intentos}: "
+                  f"local={local_size}, remoto={remote_size})")
+        except Exception as e:
+            print(f"  Probe falló (intento {intentos}): {e}")
+        time.sleep(10)
+
+    print(f"  Aviso: timeout {max_segundos}s esperando Vercel — sigo igual")
+
+
+def correr_heyzine():
+    """Llama heyzine_upload.py. Devuelve True si exit 0."""
+    if not os.path.exists(HEYZINE_SCRIPT):
+        print(f"  Aviso: no existe {HEYZINE_SCRIPT}, salteando Heyzine")
+        return False
+    cmd = [sys.executable, HEYZINE_SCRIPT]
+    result = subprocess.run(cmd, cwd=SCRIPT_DIR)
+    return result.returncode == 0
+
+
+# =============================================================================
 # Auto-actualización de contadores en index.html
 # =============================================================================
 
@@ -211,6 +269,11 @@ def update_index_counts(counts):
 # =============================================================================
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--skip-heyzine", action="store_true",
+                        help="No re-sube los flipbooks a Heyzine al final")
+    args = parser.parse_args()
+
     print("=" * 60)
     print("  Actualización de Catálogos El Forastero")
     print(f"  {datetime.now().strftime('%Y-%m-%d %H:%M')}")
@@ -339,8 +402,27 @@ def main():
     ], check=True)
     subprocess.run(["git", "push"], check=True)
 
-    print("\nListo. Vercel va a re-deployar en ~1 minuto.")
+    print("\nVercel va a re-deployar en ~1 minuto.")
     print("URL: https://catalogos.elforastero.com.ar")
+
+    # Paso final: refrescar flipbooks en Heyzine (dedup por URL → mismos IDs)
+    if args.skip_heyzine:
+        print("\n[--skip-heyzine] Salteo paso Heyzine.")
+        print("\nListo.")
+        return
+
+    print("\n" + "=" * 60)
+    print("  Heyzine: esperando Vercel y re-subiendo flipbooks")
+    print("=" * 60)
+    probe_local = os.path.join(PDFS_DIR, "equinos.pdf")
+    esperar_deploy_vercel(probe_local)
+    ok = correr_heyzine()
+    if ok:
+        print("\nListo. Catálogos web + Heyzine actualizados.")
+    else:
+        print("\nAviso: Heyzine falló. Catálogos web ya quedaron actualizados.",
+              file=sys.stderr)
+        sys.exit(2)
 
 
 if __name__ == "__main__":
