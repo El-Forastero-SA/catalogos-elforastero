@@ -1,0 +1,9 @@
+{
+  "name": "galeria-imagenes-forastero",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Galería pública de imágenes de producto de El Forastero S.A.",
+  "dependencies": {
+    "archiver": "^7.0.1"
+  }
+}

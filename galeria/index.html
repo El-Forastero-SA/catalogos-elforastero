@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>El Forastero — Imágenes de Producto</title>
+  <meta name="description" content="Galería de imágenes de producto de El Forastero S.A. para descargar.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="assets/logo-forastero.png" type="image/png">
+</head>
+<body>
+  <header class="header">
+    <img src="assets/logo-forastero.png" alt="El Forastero" onerror="this.style.display='none'">
+    <div>
+      <div class="titulo">Imágenes de <span>Producto</span></div>
+      <div class="sub">Descargá las fotos de nuestros productos</div>
+    </div>
+  </header>
+
+  <div class="filtros">
+    <input type="search" id="buscar" class="buscar" placeholder="Buscar producto o marca…" autocomplete="off">
+    <div class="chips" id="chips-especie"></div>
+    <select id="filtro-categoria" class="filtro"><option value="">Todas las categorías</option></select>
+    <select id="filtro-marca" class="filtro"><option value="">Todas las marcas</option></select>
+    <button id="btn-zip" class="btn-zip">
+      <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      <span id="btn-zip-label">Descargar todo</span>
+    </button>
+  </div>
+
+  <div class="conteo" id="conteo"></div>
+  <div class="grid" id="grid"></div>
+  <div class="sentinel" id="sentinel"></div>
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

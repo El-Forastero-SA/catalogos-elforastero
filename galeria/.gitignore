@@ -1,0 +1,5 @@
+.listas_cache/
+node_modules/
+.vercel/
+devserver.mjs
+test_api.mjs

@@ -65,3 +65,20 @@ jobs:
         env:
           HEYZINE_API_KEY: ${{ secrets.HEYZINE_API_KEY }}
         run: python -u actualizar_catalogos.py --skip-accesorios
+
+      - name: Regenerar galería de imágenes (manifest + thumbs)
+        # Reutiliza catalogo-template/.env (Magento). Los thumbs existentes se
+        # reusan; solo se bajan/generan los de productos nuevos. La descarga en
+        # la web siempre trae el original vivo de Magento, así que un thumb
+        # cacheado nunca desactualiza el archivo entregado.
+        run: python -u galeria/generar_manifest.py
+
+      - name: Commit galería (manifest + thumbs nuevos)
+        run: |
+          git add galeria/manifest.json galeria/thumbs
+          if git diff --cached --quiet; then
+            echo "Sin cambios en la galería."
+          else
+            git commit -m "data: galería de imágenes $(date +%F)"
+            git push
+          fi
